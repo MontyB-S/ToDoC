@@ -17,12 +17,13 @@ int task_count = 0;
 char tasks[MAX_TASKS][TASK_LENGTH];
 
 int main() {
+	load_task();
 	int choice;
 	while(1) {
 		display_menu();
 		printf("Enter your choice: ");
 		scanf("%d", &choice); //Take the integer in stream and store in address of variable choice
-		getchar(); //Consume the newline character | don't interrupt stream
+		getchar(); //Consume the newline character | do;t interrupt stream
 		switch (choice) {
 			case 1:
 				add_task();
@@ -32,6 +33,9 @@ int main() {
 				break;
 			case 3:
 				view_task();
+				break;
+			case 4:
+				save_task();
 				break;
 			case 5:
 				exit(0);
@@ -83,3 +87,34 @@ void view_task() {
 		printf("%d %s\n", i+1, tasks[i]);
 	}
 }
+
+void save_task() {
+	FILE *fp;
+	fp = fopen("saves.txt", "w");
+
+	if (fp == NULL) {
+		printf("Error opening file for writing");
+		return;
+	}
+
+	for (int i = 0; i < task_count; i++) {
+		fprintf(fp, "%s\n", tasks[i]);
+	}
+	fclose(fp);
+}
+
+void load_task() {
+	FILE *fp;
+	fp = fopen("saves.txt", "r");
+	if ( fp == NULL) {
+		printf("Error opening file for reading");
+		return;
+	}
+
+	while (fgets(tasks[task_count],TASK_LENGTH, fp)) {
+		tasks[task_count][strcspn(tasks[task_count], "\n")] = 0;
+		task_count ++;
+	}
+	fclose(fp);
+}
+
